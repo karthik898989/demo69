@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Simulation - AuraLite</title>
+    <link rel="stylesheet" href="style.css">
+    <script async src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">✨ AuraLite</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link" id="logout-link" style="display:none;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="interview-container">
+        <!-- Setup Modal -->
+        <div id="setup-modal" class="modal">
+            <div class="modal-content">
+                <h2>Interview Setup</h2>
+                <div class="form-group">
+                    <label>Select Job Role:</label>
+                    <select id="job-role">
+                        <option value="software-engineer">Software Engineer</option>
+                        <option value="product-manager">Product Manager</option>
+                        <option value="data-scientist">Data Scientist</option>
+                        <option value="marketing">Marketing Manager</option>
+                        <option value="sales">Sales Executive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Interview Difficulty:</label>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn active" data-level="easy">Easy</button>
+                        <button class="difficulty-btn" data-level="medium">Medium</button>
+                        <button class="difficulty-btn" data-level="hard">Hard</button>
+                    </div>
+                </div>
+                <button id="start-interview-btn" class="btn btn-primary btn-lg">Start Interview</button>
+            </div>
+        </div>
+
+        <!-- Main Interview View -->
+        <div id="interview-view" class="interview-view hidden">
+            <div class="interview-split">
+                <!-- Left: Avatar & User Video -->
+                <div class="interview-left">
+                    <div class="avatar-container">
+                        <canvas id="avatar-canvas" width="400" height="500"></canvas>
+                    </div>
+                    
+                    <div class="user-video-container">
+                        <video id="user-webcam" playsinline autoplay></video>
+                        <canvas id="analysis-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right: Interview Content -->
+                <div class="interview-right">
+                    <div class="interview-header">
+                        <h2>Interview Session</h2>
+                        <div class="session-info">
+                            <span>Role: <strong id="role-display"></strong></span>
+                            <span>Time: <strong id="session-time">00:00</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Question Display -->
+                    <div class="question-display">
+                        <h3>Question:</h3>
+                        <p id="current-question" class="question-text">Loading question...</p>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="recording-controls">
+                        <button id="record-btn" class="btn btn-primary">🎤 Start Recording</button>
+                        <button id="next-question-btn" class="btn btn-secondary" style="display:none;">Next Question</button>
+                        <button id="finish-interview-btn" class="btn btn-secondary" style="display:none;">Finish Interview</button>
+                    </div>
+
+                    <!-- Real-time Metrics -->
+                    <div class="live-metrics">
+                        <div class="metric-item">
+                            <span>🎭 Emotion</span>
+                            <span id="emotion-display">--</span>
+                        </div>
+                        <div class="metric-item">
+                            <span>📈 Confidence</span>
+                            <span id="confidence-display">--</span>
+                        </div>
+                        <div class="metric-item">
+                            <span>🎤 Speaking</span>
+                            <span id="speaking-display">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Transcript -->
+                    <div class="transcript-area">
+                        <h4>Your Response:</h4>
+                        <div id="response-text" class="response-display">Speak to see transcript here...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Modal -->
+        <div id="results-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <h2>Interview Results & Feedback</h2>
+                
+                <div class="results-grid">
+                    <!-- Overall Score -->
+                    <div class="result-card large">
+                        <h3>Overall Performance</h3>
+                        <div class="score-display">
+                            <div class="score-gauge">
+                                <svg class="gauge-svg" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="50" class="gauge-bg"></circle>
+                                    <circle cx="60" cy="60" r="50" class="gauge-progress" id="overall-gauge"></circle>
+                                </svg>
+                                <div class="score-text">
+                                    <span id="overall-score">--</span>
+                                    <span class="score-label">/ 100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Behavioral Analysis -->
+                    <div class="result-card">
+                        <h3>Behavioral Analysis</h3>
+                        <div class="metric-box">
+                            <div class="metric-row">
+                                <span>Confidence</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="conf-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="conf-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Eye Contact</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="eye-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="eye-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Expression</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="expr-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="expr-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Posture</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="pos-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="pos-score">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vocal Analysis -->
+                    <div class="result-card">
+                        <h3>Vocal Analysis</h3>
+                        <div class="metric-box">
+                            <div class="metric-row">
+                                <span>Pace (WPM)</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="pace-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="pace-score">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Clarity</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="clarity-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="clarity-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Pitch Variation</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="pitch-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="pitch-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Filler Words</span>
+                                <div class="progress-bar danger">
+                                    <div class="progress-fill" id="filler-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="filler-score">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Semantic Analysis -->
+                    <div class="result-card">
+                        <h3>Semantic & Linguistic</h3>
+                        <div class="metric-box">
+                            <div class="metric-row">
+                                <span>Structure</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="struct-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="struct-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>STAR Method</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="star-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="star-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Relevance</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="relevance-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="relevance-score">0%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Completeness</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="complete-bar" style="width: 0%"></div>
+                                </div>
+                                <span id="complete-score">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations-box">
+                    <h3>💡 Personalized Recommendations</h3>
+                    <div id="recommendations-list"></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="result-actions">
+                    <button id="retry-btn" class="btn btn-primary">Try Again</button>
+                    <button id="view-dashboard-btn" class="btn btn-secondary">View Dashboard</button>
+                    <button id="home-btn" class="btn btn-secondary">Back Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="avatar.js"></script>
+    <script src="interview.js"></script>
+</body>
+</html>

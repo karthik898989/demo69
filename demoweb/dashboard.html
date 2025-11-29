@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AuraLite</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">✨ AuraLite</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="interview.html" class="nav-link">Practice</a>
+                <a href="#" class="nav-link" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h1>Performance Dashboard</h1>
+                <p>Track your interview practice progress</p>
+            </div>
+            <div class="user-info">
+                <span id="user-greeting">Welcome, User</span>
+                <button id="user-logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total Sessions</h3>
+                <div class="card-value" id="total-sessions">0</div>
+                <p class="card-subtitle">interviews completed</p>
+            </div>
+            <div class="summary-card">
+                <h3>Average Score</h3>
+                <div class="card-value" id="avg-score">0</div>
+                <p class="card-subtitle">out of 100</p>
+            </div>
+            <div class="summary-card">
+                <h3>Best Score</h3>
+                <div class="card-value" id="best-score">0</div>
+                <p class="card-subtitle">personal best</p>
+            </div>
+            <div class="summary-card">
+                <h3>Improvement</h3>
+                <div class="card-value" id="improvement">0%</div>
+                <p class="card-subtitle">since last session</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <!-- Performance Over Time -->
+            <div class="chart-container">
+                <h2>Performance Trend</h2>
+                <canvas id="trend-chart"></canvas>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="chart-container">
+                <h2>Score Breakdown</h2>
+                <canvas id="category-chart"></canvas>
+            </div>
+
+            <!-- Emotion Distribution -->
+            <div class="chart-container">
+                <h2>Emotion Analysis</h2>
+                <canvas id="emotion-chart"></canvas>
+            </div>
+
+            <!-- Vocal Metrics -->
+            <div class="chart-container">
+                <h2>Vocal Performance</h2>
+                <canvas id="vocal-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Metrics -->
+        <div class="metrics-section">
+            <h2>Detailed Performance Metrics</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Behavioral Scores</h3>
+                    <div class="metric-list">
+                        <div class="metric-item-dash">
+                            <span>Confidence</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-confidence" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-confidence-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Eye Contact</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-eye-contact" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-eye-contact-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Expression</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-expression" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-expression-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Posture</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-posture" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-posture-val">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Vocal Scores</h3>
+                    <div class="metric-list">
+                        <div class="metric-item-dash">
+                            <span>Pace (WPM)</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-pace" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-pace-val">0</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Clarity</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-clarity" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-clarity-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Pitch Variation</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-pitch" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-pitch-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Filler Words</span>
+                            <div class="progress-bar danger">
+                                <div class="progress-fill" id="metric-filler" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-filler-val">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Semantic Scores</h3>
+                    <div class="metric-list">
+                        <div class="metric-item-dash">
+                            <span>Structure</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-structure" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-structure-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>STAR Method</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-star" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-star-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Relevance</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-relevance" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-relevance-val">0%</span>
+                        </div>
+                        <div class="metric-item-dash">
+                            <span>Completeness</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="metric-completeness" style="width: 0%"></div>
+                            </div>
+                            <span id="metric-completeness-val">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session History -->
+        <div class="history-section">
+            <h2>Session History</h2>
+            <div class="session-table-container">
+                <table class="session-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Role</th>
+                            <th>Difficulty</th>
+                            <th>Score</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="session-history">
+                        <tr class="empty-state">
+                            <td colspan="6">No interview sessions yet. <a href="interview.html">Start practicing now!</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replay Modal -->
+    <div id="replay-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Interview Replay</h2>
+            <div class="replay-container">
+                <video id="replay-video" controls></video>
+                <div class="replay-data">
+                    <h3>Session Details</h3>
+                    <p><strong>Date:</strong> <span id="replay-date"></span></p>
+                    <p><strong>Score:</strong> <span id="replay-score"></span>/100</p>
+                    <p><strong>Duration:</strong> <span id="replay-duration"></span></p>
+                    <p><strong>Role:</strong> <span id="replay-role"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
